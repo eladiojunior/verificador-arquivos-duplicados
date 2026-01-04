@@ -1,7 +1,9 @@
 package br.com.devd2.utilitario;
 
+import br.com.devd2.utilitario.db.JpaBatchWriter;
 import br.com.devd2.utilitario.dto.ResultProcessDto;
 import br.com.devd2.utilitario.helper.*;
+import br.com.devd2.utilitario.service.ParallelScannerService;
 import br.com.devd2.utilitario.service.RemoveDuplicateService;
 import br.com.devd2.utilitario.service.ScannerDuplicateService;
 
@@ -111,7 +113,10 @@ public class Main {
         long total_bytes_removidos = 0L;
 
         // 4) Verifica o local e varre para registrar os arquivos em banco local...
-        var resultScanner = scannerService.scanFiles(basePath, scanSubpastas);
+        // Implementação de paralelismo...
+        var writer = new JpaBatchWriter(200); // lote de 200 costuma ser ótimo
+        var resultScanner = ParallelScannerService.scanFiles(basePath, scanSubpastas, writer);
+        // var resultScanner = scannerService.scanFiles(basePath, scanSubpastas);
         if (resultScanner == null)
             return null; //Erro
         total_arquivos = resultScanner.totalFilesScan();

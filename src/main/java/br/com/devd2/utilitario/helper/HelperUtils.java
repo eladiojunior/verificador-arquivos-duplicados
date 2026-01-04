@@ -27,8 +27,7 @@ public class HelperUtils {
     }
 
     public static List<Path> listarArquivos(Path diretorio, boolean isSubdiretorios) throws IOException {
-        var maxDepth = isSubdiretorios?Integer.MAX_VALUE:1;
-        try (Stream<Path> stream = Files.walk(diretorio, maxDepth)) {
+        try (Stream<Path> stream = isSubdiretorios ? Files.walk(diretorio) : Files.list(diretorio)) {
             return stream
                     .filter(Files::isRegularFile)
                     .sorted(Comparator.comparing(Path::toString))
